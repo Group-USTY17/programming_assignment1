@@ -44,9 +44,10 @@ public class ElevatorScene {
 		 * elevator threads to stop
 		 */
 		
+		//TODO clean up after last run
 		elevators = new Elevator[numberOfElevators];
 		for(int i = 0; i < numberOfElevators; i++) {
-			elevators[i] = new Elevator(0); //initialize all elevators at floor 0
+			elevators[i] = new Elevator(0, numberOfFloors); //initialize all elevators at floor 0
 			new Thread(elevators[i]).start(); //start elevators
 		}
 

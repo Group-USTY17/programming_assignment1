@@ -3,6 +3,7 @@ package com.ru.usty.elevator;
 public class Elevator implements Runnable {
 	int currentFloor;
 	int occupants;
+	int floorCount;
 	
 	@Override
 	public void run() {
@@ -12,12 +13,13 @@ public class Elevator implements Runnable {
 		for(int i = 0; i < 10000; i++) {
 			try { java.lang.Thread.sleep(ElevatorScene.VISUALIZATION_WAIT_TIME); }
 			catch (InterruptedException e) { e.printStackTrace(); }
-			currentFloor = i % 2;
+			currentFloor = i % floorCount;
 		}
 	}
 	
-	public Elevator(int floor) {
+	public Elevator(int floor, int floors) {
 		currentFloor = floor;
+		floorCount = floors;
 		occupants = 0;
 	}
 	
