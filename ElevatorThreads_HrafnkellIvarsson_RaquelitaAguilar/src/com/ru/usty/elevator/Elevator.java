@@ -10,7 +10,7 @@ public class Elevator implements Runnable {
 		
 		//TEST CYCLING BETWEEN FLOORS
 		for(int i = 0; i < 10000; i++) {
-			try { java.lang.Thread.sleep(1000); }
+			try { java.lang.Thread.sleep(ElevatorScene.VISUALIZATION_WAIT_TIME); }
 			catch (InterruptedException e) { e.printStackTrace(); }
 			currentFloor = i % 2;
 		}
