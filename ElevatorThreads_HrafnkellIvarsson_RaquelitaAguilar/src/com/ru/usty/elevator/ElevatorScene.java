@@ -26,6 +26,8 @@ public class ElevatorScene {
 									//if it suits you
 	ArrayList<Integer> exitedCount = null;
 	public static Semaphore exitedCountMutex;
+	
+	Elevator[] elevators;
 
 	//Base function: definition must not change
 	//Necessary to add your code in this one
@@ -41,6 +43,12 @@ public class ElevatorScene {
 		 * If you can, tell any currently running
 		 * elevator threads to stop
 		 */
+		
+		elevators = new Elevator[numberOfElevators];
+		for(int i = 0; i < numberOfElevators; i++) {
+			elevators[i] = new Elevator(0); //initialize all elevators at floor 0
+			new Thread(elevators[i]).start(); //start elevators
+		}
 
 		this.numberOfFloors = numberOfFloors;
 		this.numberOfElevators = numberOfElevators;
@@ -82,20 +90,12 @@ public class ElevatorScene {
 
 	//Base function: definition must not change, but add your code
 	public int getCurrentFloorForElevator(int elevator) {
-
-		//dumb code, replace it!
-		return 1;
+		return elevators[elevator].getFloor();
 	}
 
 	//Base function: definition must not change, but add your code
 	public int getNumberOfPeopleInElevator(int elevator) {
-		
-		//dumb code, replace it!
-		switch(elevator) {
-		case 1: return 1;
-		case 2: return 4;
-		default: return 3;
-		}
+		return elevators[elevator].getOccupants();
 	}
 
 	//Base function: definition must not change, but add your code
