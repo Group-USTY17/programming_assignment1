@@ -20,14 +20,11 @@ public class ElevatorScene {
 	private int numberOfFloors;
 	private int numberOfElevators;
 
-	ArrayList<Integer> personCount; //use if you want but
-									//throw away and
-									//implement differently
-									//if it suits you
 	ArrayList<Integer> exitedCount = null;
 	public static Semaphore exitedCountMutex;
 	
 	Elevator[] elevators;
+	Floor[] floors;
 
 	//Base function: definition must not change
 	//Necessary to add your code in this one
@@ -44,20 +41,20 @@ public class ElevatorScene {
 		 * elevator threads to stop
 		 */
 		
+		floors = new Floor[numberOfFloors];
+		for(int i = 0; i < numberOfFloors; i++) {
+			floors[i] = new Floor(); //initialize all floors
+		}
+		
 		//TODO clean up after last run
 		elevators = new Elevator[numberOfElevators];
 		for(int i = 0; i < numberOfElevators; i++) {
-			elevators[i] = new Elevator(0, numberOfFloors); //initialize all elevators at floor 0
+			elevators[i] = new Elevator(0, numberOfFloors, this); //initialize all elevators at floor 0
 			new Thread(elevators[i]).start(); //start elevators
 		}
 
 		this.numberOfFloors = numberOfFloors;
 		this.numberOfElevators = numberOfElevators;
-
-		personCount = new ArrayList<Integer>();
-		for(int i = 0; i < numberOfFloors; i++) {
-			this.personCount.add(0);
-		}
 
 		if(exitedCount == null) {
 			exitedCount = new ArrayList<Integer>();
@@ -85,9 +82,11 @@ public class ElevatorScene {
 		 */
 
 		//personCount.set(sourceFloor, personCount.get(sourceFloor) + 1);
-		Thread newPerson = new Thread(new Person(sourceFloor, destinationFloor, this));
-		newPerson.start();
-		return newPerson;
+		Person newPerson = new Person(sourceFloor, destinationFloor, this);
+		floors[sourceFloor].addPerson(newPerson);
+		Thread newThread = new Thread(new Person(sourceFloor, destinationFloor, this));
+		newThread.start();
+		return newThread;
 	}
 
 	//Base function: definition must not change, but add your code
@@ -97,13 +96,12 @@ public class ElevatorScene {
 
 	//Base function: definition must not change, but add your code
 	public int getNumberOfPeopleInElevator(int elevator) {
-		return elevators[elevator].getOccupants();
+		return elevators[elevator].getOccupantCount();
 	}
 
 	//Base function: definition must not change, but add your code
 	public int getNumberOfPeopleWaitingAtFloor(int floor) {
-
-		return personCount.get(floor);
+		return floors[floor].getPersonCount();
 	}
 
 	//Base function: definition must not change, but add your code if needed
