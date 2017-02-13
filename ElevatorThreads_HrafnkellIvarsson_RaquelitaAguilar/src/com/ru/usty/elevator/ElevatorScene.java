@@ -83,9 +83,10 @@ public class ElevatorScene {
 		 * (you don't have to join() yourself)
 		 */
 
-		//dumb code, replace it!
-		personCount.set(sourceFloor, personCount.get(sourceFloor) + 1);
-		return null;  //this means that the testSuite will not wait for the threads to finish
+		//personCount.set(sourceFloor, personCount.get(sourceFloor) + 1);
+		Thread newPerson = new Thread(new Person(sourceFloor, destinationFloor, this));
+		newPerson.start();
+		return newPerson;
 	}
 
 	//Base function: definition must not change, but add your code
