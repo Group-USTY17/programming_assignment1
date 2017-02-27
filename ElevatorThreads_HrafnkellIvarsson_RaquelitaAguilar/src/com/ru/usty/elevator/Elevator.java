@@ -1,6 +1,7 @@
 package com.ru.usty.elevator;
 
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 
 public class Elevator implements Runnable {
 	private volatile boolean cancelled;
@@ -11,6 +12,7 @@ public class Elevator implements Runnable {
 	private int direction;
 	private ArrayList<Person> occupants;
 	private ElevatorScene scene;
+	private static Semaphore occupantsMutex;
 	
 	@Override
 	public void run() {
@@ -36,6 +38,7 @@ public class Elevator implements Runnable {
 		scene = es;
 		occupants = new ArrayList<Person>();
 		direction = 1;
+		occupantsMutex = new Semaphore(1);
 	}
 	
 	public int getFloor() {
@@ -47,12 +50,40 @@ public class Elevator implements Runnable {
 	}
 	
 	public boolean addOccupant(Person pers) {
-		if(occupants.size() >= capacity) return false;
-		return occupants.add(pers);
+		try {
+			occupantsMutex.acquire();
+			if(occupants.size() >= capacity) {
+				occupantsMutex.release();
+				return false;
+			}
+			
+			occupants.add(pers);
+			occupantsMutex.release();
+			return true;
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return false;
 	}
 	
 	public boolean removeOccupant(Person pers) {
-		return occupants.remove(pers);
+		try {
+			occupantsMutex.acquire();
+			occupants.remove(pers);
+			occupantsMutex.release();
+			return true;
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	public boolean atCapacity() {
+		return occupants.size() >= capacity;
 	}
 	
 	public void cancel() {
@@ -86,19 +117,12 @@ public class Elevator implements Runnable {
 	}
 	
 	//remove an occupant
+	//TODO TO BE DEPRECATED
 	private void removeOccupant(int at) {
 		Person occupant = occupants.get(at);
 		occupants.remove(at);
 		occupant.exit();
 		occupantCount--;
-	}
-	
-	//fill the elevator to its maximum capacity
-	//TODO TO BE DEPRECATED
-	private void fillToCapacity() {
-		ArrayList<Person> newOccupants = scene.floors[currentFloor].getPersons(capacity - occupantCount);
-		occupants.addAll(newOccupants);
-		occupantCount += newOccupants.size();
 	}
 	
 	//calculate what floor the elevator should go to next
@@ -145,4 +169,5 @@ public class Elevator implements Runnable {
 		if (direction == 1) goUp();
 		else goDown();
 	}
+	
 }

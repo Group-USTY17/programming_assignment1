@@ -11,7 +11,7 @@ public class Person implements Runnable {
 	public void run() {
 		//do something a person would do
 		while(!cancelled) {
-			try { java.lang.Thread.sleep(10); }
+			try { java.lang.Thread.sleep(100); }
 			catch (InterruptedException e) { e.printStackTrace(); }
 			
 			if(currentElevator != null) {
@@ -27,6 +27,8 @@ public class Person implements Runnable {
 					enterElevator(availableElevator);
 				}
 			}
+			
+			//debugPerson();
 		}
 	}
 	
@@ -65,11 +67,20 @@ public class Person implements Runnable {
 		}
 	}
 	
-	private void exitElevator() {
+	private void exitElevator() {	
 		if(currentElevator.removeOccupant(this)) {
 			currentElevator = null;
-			exit();
+			exit();			
 			cancel();
 		}
+			
+	}
+	
+	private void debugPerson() {
+		System.out.println("Current Floor: " + currentFloor);
+		System.out.println("Destination Floor: " + destinationFloor);
+		if(currentElevator != null) System.out.println("Currently In Elevator");
+		else System.out.println("Currently NOT In Elevator");
+		System.out.println();
 	}
 }
