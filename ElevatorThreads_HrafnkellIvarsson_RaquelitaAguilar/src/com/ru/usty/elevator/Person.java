@@ -15,7 +15,7 @@ public class Person implements Runnable {
 			catch (InterruptedException e) { e.printStackTrace(); }
 			
 			if(currentElevator != null) {
-				currentFloor = currentElevator.getFloor();
+				currentFloor = currentElevator.getFloor(); //update current floor
 				
 				if(currentFloor == destinationFloor) {
 					exitElevator();
@@ -38,16 +38,14 @@ public class Person implements Runnable {
 		scene = es;
 	}
 	
+	//get persons destination
 	public int getDestination() {
 		return destinationFloor;
 	}
 	
+	//check if current floor is destination floor
 	public boolean isDestination(int destination) {
 		return destinationFloor == destination;
-	}
-	
-	public void exit() {
-		scene.personExitsAtFloor(destinationFloor);
 	}
 	
 	public void cancel() {
@@ -70,10 +68,15 @@ public class Person implements Runnable {
 	private void exitElevator() {	
 		if(currentElevator.removeOccupant(this)) {
 			currentElevator = null;
-			exit();			
+			exit(currentFloor);			
 			cancel();
 		}
 			
+	}
+	
+	//report person exiting to elevatorscene
+	private void exit(int floor) {
+		scene.personExitsAtFloor(floor);
 	}
 	
 	private void debugPerson() {

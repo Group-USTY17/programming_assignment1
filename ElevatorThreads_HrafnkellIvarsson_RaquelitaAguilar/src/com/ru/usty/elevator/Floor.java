@@ -4,21 +4,18 @@ import java.util.concurrent.Semaphore;
 
 public class Floor {
 	private int personCount;
-	//private ArrayList<Person> persons;
 	private ArrayList<Elevator> elevators;
 	private static Semaphore personCountMutex;
 	private static Semaphore elevatorListMutex;
 	
 	public Floor() {
 		personCount = 0;
-		//persons = new ArrayList<Person>();
 		elevators = new ArrayList<Elevator>();
 		personCountMutex = new Semaphore(1);
 		elevatorListMutex = new Semaphore(1);
 	}
 	
 	public void addPerson(Person pers) {
-		//persons.add(pers);
 		try {
 			personCountMutex.acquire();
 			personCount++;
@@ -30,7 +27,6 @@ public class Floor {
 	}
 	
 	public void removePerson(Person pers) {
-		//persons.remove(pers);
 		try {
 			personCountMutex.acquire();
 			personCount--;
