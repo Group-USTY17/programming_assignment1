@@ -8,7 +8,7 @@ public class Elevator implements Runnable {
 	private int currentFloor;
 	private int floorCount;
 	private int capacity;
-	private int direction;
+	private int direction; //0 == down, 1 == up
 	private ArrayList<Person> occupants;
 	private ElevatorScene scene;
 	private static Semaphore occupantsMutex;
@@ -28,6 +28,7 @@ public class Elevator implements Runnable {
 		}
 	}
 	
+	//CONSTRUCTOR
 	public Elevator(int floor, int floors, ElevatorScene es) {
 		currentFloor = floor;
 		floorCount = floors;
@@ -38,18 +39,21 @@ public class Elevator implements Runnable {
 		occupantsMutex = new Semaphore(1);
 	}
 	
+	//returns the current floor of the elevator
 	public int getFloor() {
 		return currentFloor;
 	}
 	
+	//returns the number of people in the elevator
 	public int getOccupantCount() {
 		return occupants.size();
 	}
 	
+	//adds a person to the elevator
 	public boolean addOccupant(Person pers) {
 		try {
 			occupantsMutex.acquire();
-			if(occupants.size() >= capacity) {
+			if(atCapacity()) { //if the elevator is full
 				occupantsMutex.release();
 				return false;
 			}
@@ -58,12 +62,12 @@ public class Elevator implements Runnable {
 			occupantsMutex.release();
 			return true;
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		return false;
 	}
+	
 	
 	public boolean removeOccupant(Person pers) {
 		try {
@@ -72,13 +76,13 @@ public class Elevator implements Runnable {
 			occupantsMutex.release();
 			return true;
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		return false;
 	}
 	
+	//is the elevator full?
 	public boolean atCapacity() {
 		return occupants.size() >= capacity;
 	}
@@ -91,32 +95,30 @@ public class Elevator implements Runnable {
 		return cancelled;
 	}
 	
-	//PRIVATE FUNCTIONS BELOW
-	
+	//===================PRIVATE FUNCTIONS====================
 	
 	//calculate what floor the elevator should go to next
 	private void changeFloor() {
 		//TODO make an algorithm that is'nt stupid
-		/*
-		if(occupantCount <= 0){ //is the elevator empty?
-			if(!goDown()) goUp(); //go down unless at bottom floot
+		if(scene.getActivePersonCount() == 0) return; //no active persons, do nothing
+		
+		if(occupants.size() <= 0){ //is the elevator empty?
+			goNext();
 		}
 		else {
 			if(occupants.get(0).getDestination() > currentFloor) goUp();
 			else goDown();
 		}
-		*/
-		
-		scene.floors[currentFloor].elevatorLeaves(this);
-		goNext(); //for simple testing
-		scene.floors[currentFloor].elevatorArrives(this);
 	}
 	
 	//move elevator up
 	private boolean goUp() {
 		if (currentFloor >= floorCount) return false;
 		else {
+			scene.floors[currentFloor].elevatorLeaves(this);
 			currentFloor++;
+			direction = 1;
+			scene.floors[currentFloor].elevatorArrives(this);
 			return true;
 		}
 	}
@@ -125,15 +127,18 @@ public class Elevator implements Runnable {
 	private boolean goDown() {
 		if (currentFloor <= 0) return false;
 		else {
+			scene.floors[currentFloor].elevatorLeaves(this);
 			currentFloor--;
+			direction = 0;
+			scene.floors[currentFloor].elevatorArrives(this);
 			return true;
 		}
 	}
 	
-	//testing function for just going up and down
+	//go up or down depending on current elevator direction
 	private void goNext() {
-		if (currentFloor == floorCount-1) direction = 0;
-		else if (currentFloor == 0) direction = 1;
+		if (currentFloor == floorCount-1) direction = 0; //at top, go down
+		else if (currentFloor == 0) direction = 1; //at bottum, go up
 		
 		if (direction == 1) goUp();
 		else goDown();

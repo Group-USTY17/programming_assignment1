@@ -19,6 +19,7 @@ public class ElevatorScene {
 
 	private int numberOfFloors;
 	private int numberOfElevators;
+	private int activePersons;
 
 	ArrayList<Integer> exitedCount = null;
 	public static Semaphore exitedCountMutex;
@@ -82,6 +83,7 @@ public class ElevatorScene {
 		 */
 
 		//personCount.set(sourceFloor, personCount.get(sourceFloor) + 1);
+		activePersons++;
 		Person newPerson = new Person(sourceFloor, destinationFloor, this);
 		floors[sourceFloor].addPerson(newPerson);
 		Thread newThread = new Thread(new Person(sourceFloor, destinationFloor, this));
@@ -147,6 +149,7 @@ public class ElevatorScene {
 			
 			exitedCountMutex.acquire();
 			exitedCount.set(floor, (exitedCount.get(floor) + 1));
+			activePersons--;
 			exitedCountMutex.release();
 
 		} catch (InterruptedException e) {
@@ -164,6 +167,10 @@ public class ElevatorScene {
 		else {
 			return 0;
 		}
+	}
+	
+	public int getActivePersonCount() {
+		return activePersons;
 	}
 
 

@@ -8,6 +8,7 @@ public class Floor {
 	private static Semaphore personCountMutex;
 	private static Semaphore elevatorListMutex;
 	
+	//CONSTRUCTOR
 	public Floor() {
 		personCount = 0;
 		elevators = new ArrayList<Elevator>();
@@ -15,51 +16,52 @@ public class Floor {
 		elevatorListMutex = new Semaphore(1);
 	}
 	
+	//adds a person
 	public void addPerson(Person pers) {
 		try {
 			personCountMutex.acquire();
 			personCount++;
 			personCountMutex.release();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 	}
 	
+	//removes a person
 	public void removePerson(Person pers) {
 		try {
 			personCountMutex.acquire();
 			personCount--;
 			personCountMutex.release();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
+	//add elevator to elevator list
 	public void elevatorArrives(Elevator elev) {
 		try {
 			elevatorListMutex.acquire();
 			elevators.add(elev);
 			elevatorListMutex.release();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 	}
 	
+	//remove elevator from elevator list
 	public void elevatorLeaves(Elevator elev) {
 		try {
 			elevatorListMutex.acquire();
 			elevators.remove(elev);
 			elevatorListMutex.release();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
+	//returns an available elevator
 	public Elevator getAvailableElevator() {
 		for(int i = 0; i < elevators.size(); i++) {
 			if(!elevators.get(i).atCapacity()) return elevators.get(i);
@@ -68,6 +70,7 @@ public class Floor {
 		return null;
 	}
  	
+	//returns number of persons waiting at floor
 	public int getPersonCount() {
 		return personCount;
 	}
