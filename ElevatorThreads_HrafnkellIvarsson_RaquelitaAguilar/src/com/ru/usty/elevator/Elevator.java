@@ -138,7 +138,7 @@ public class Elevator implements Runnable {
 	//go up or down depending on current elevator direction
 	private void goNext() {
 		if (currentFloor == floorCount-1) direction = 0; //at top, go down
-		else if (currentFloor == 0) direction = 1; //at bottum, go up
+		else if (currentFloor == 0) direction = 1; //at bottom, go up
 		
 		if (direction == 1) goUp();
 		else goDown();

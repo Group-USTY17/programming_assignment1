@@ -25,6 +25,7 @@ public class ElevatorScene {
 	public static Semaphore exitedCountMutex;
 	
 	Elevator[] elevators;
+	Thread[] elevatorThreads;
 	Floor[] floors;
 
 	//Base function: definition must not change
@@ -42,47 +43,16 @@ public class ElevatorScene {
 		 * elevator threads to stop
 		 */
 		
-		floors = new Floor[numberOfFloors];
-		for(int i = 0; i < numberOfFloors; i++) {
-			floors[i] = new Floor(); //initialize all floors
-		}
-		
-		//TODO clean up after last run
-		elevators = new Elevator[numberOfElevators];
-		for(int i = 0; i < numberOfElevators; i++) {
-			elevators[i] = new Elevator(0, numberOfFloors, this); //initialize all elevators at floor 0
-			new Thread(elevators[i]).start(); //start elevators
-		}
+		cleanUpScene();
+		initializeScene(numberOfFloors, numberOfElevators);
 
 		this.numberOfFloors = numberOfFloors;
 		this.numberOfElevators = numberOfElevators;
-
-		if(exitedCount == null) {
-			exitedCount = new ArrayList<Integer>();
-		}
-		else {
-			exitedCount.clear();
-		}
-		for(int i = 0; i < getNumberOfFloors(); i++) {
-			this.exitedCount.add(0);
-		}
-		exitedCountMutex = new Semaphore(1);
 	}
 
 	//Base function: definition must not change
 	//Necessary to add your code in this one
 	public Thread addPerson(int sourceFloor, int destinationFloor) {
-
-		/**
-		 * Important to add code here to make a
-		 * new thread that runs your person-runnable
-		 * 
-		 * Also return the Thread object for your person
-		 * so that it can be reaped in the testSuite
-		 * (you don't have to join() yourself)
-		 */
-
-		//personCount.set(sourceFloor, personCount.get(sourceFloor) + 1);
 		activePersons++;
 		Person newPerson = new Person(sourceFloor, destinationFloor, this);
 		floors[sourceFloor].addPerson(newPerson);
@@ -161,6 +131,8 @@ public class ElevatorScene {
 	//Base function: no need to change, just for visualization
 	//Feel free to use it though, if it helps
 	public int getExitedCountAtFloor(int floor) {
+		if(exitedCount.size() == 0) return 0; //prevents errors when resetting between tests
+		
 		if(floor < getNumberOfFloors()) {
 			return exitedCount.get(floor);
 		}
@@ -171,6 +143,65 @@ public class ElevatorScene {
 	
 	public int getActivePersonCount() {
 		return activePersons;
+	}
+	
+	//===================PRIVATE FUNCTIONS====================
+
+	private void cleanUpScene() {
+		activePersons = 0; //reset active persons
+		
+		//cancel and join() elevator threads.
+		if(elevators != null) { 
+			for(int i = 0; i < numberOfElevators; i++) {
+				elevators[i].cancel();
+				try {
+					elevatorThreads[i].join();
+				}
+				catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		elevators = null;
+		
+		//set floors to null
+		floors = null;
+		
+		//reset exited count
+		if(exitedCount != null) {
+			exitedCount.clear();
+		}	
+	}
+	
+	private void initializeScene(int numberOfFloors, int numberOfElevators) {
+		//set number of floors and number of elevators class variables
+		this.numberOfFloors = numberOfFloors;
+		this.numberOfElevators = numberOfElevators;
+		
+		//initialize floors
+		floors = new Floor[numberOfFloors];
+		for(int i = 0; i < numberOfFloors; i++) {
+			floors[i] = new Floor();
+		}
+		
+		//initialize elevators
+		elevators = new Elevator[numberOfElevators];
+		elevatorThreads = new Thread[numberOfElevators];
+		for(int i = 0; i < numberOfElevators; i++) {
+			elevators[i] = new Elevator(0, numberOfFloors, this); //initialize all elevators at floor 0
+			elevatorThreads[i] = new Thread(elevators[i]);
+			elevatorThreads[i].start();
+		}
+		
+		//initialize exited count
+		if(exitedCount == null) {
+			exitedCount = new ArrayList<Integer>();
+		}
+		for(int i = 0; i < numberOfFloors; i++) {
+			this.exitedCount.add(0);
+		}
+		exitedCountMutex = new Semaphore(1);
+		
 	}
 
 
