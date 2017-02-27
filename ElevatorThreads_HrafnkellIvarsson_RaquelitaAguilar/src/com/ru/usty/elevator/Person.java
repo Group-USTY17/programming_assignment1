@@ -7,31 +7,35 @@ public class Person implements Runnable {
 	private Elevator currentElevator;
 	private ElevatorScene scene;
 	
+	public static final int PERSON_CYCLE_TIME = 100; //thinking cycle of a person thread
+	
 	@Override
 	public void run() {
 		//do something a person would do
 		while(!cancelled) {
-			try { java.lang.Thread.sleep(100); }
-			catch (InterruptedException e) { e.printStackTrace(); }
-			
-			if(currentElevator != null) {
-				currentFloor = currentElevator.getFloor(); //update current floor
+			try {
+				java.lang.Thread.sleep(PERSON_CYCLE_TIME); //wait one cycle
 				
-				if(currentFloor == destinationFloor) {
-					exitElevator();
+				if(currentElevator != null) { //if currently in an elevator
+					currentFloor = currentElevator.getFloor(); //update current floor
+					if(currentFloor == destinationFloor) {
+						exitElevator();
+					}
+				}
+				else { //currently not in an elevator
+					Elevator availableElevator =  scene.floors[currentFloor].getAvailableElevator(); 
+					if(availableElevator != null) {
+						enterElevator(availableElevator);
+					}
 				}
 			}
-			else {
-				Elevator availableElevator =  scene.floors[currentFloor].getAvailableElevator();
-				if(availableElevator != null) {
-					enterElevator(availableElevator);
-				}
+			catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-			
-			//debugPerson();
 		}
 	}
 	
+	//CONSTRUCTOR
 	public Person(int source, int destination, ElevatorScene es) {
 		currentFloor = source;
 		destinationFloor = destination;
@@ -43,21 +47,13 @@ public class Person implements Runnable {
 		return destinationFloor;
 	}
 	
-	//check if current floor is destination floor
-	public boolean isDestination(int destination) {
-		return destinationFloor == destination;
-	}
-	
-	public void cancel() {
-		cancelled = true;
-	}
-	
 	public boolean isCancelled() {
 		return cancelled;
 	}
 	
-	//PRIVATE FUNCTIONS
+	//===================PRIVATE FUNCTIONS====================
 	
+	//adds the person to an elevator
 	private void enterElevator(Elevator e) {
 		if(e.addOccupant(this)) {
 			currentElevator = e;
@@ -65,13 +61,13 @@ public class Person implements Runnable {
 		}
 	}
 	
+	//removes the person from the elevator and kills the thread
 	private void exitElevator() {	
 		if(currentElevator.removeOccupant(this)) {
 			currentElevator = null;
 			exit(currentFloor);			
 			cancel();
-		}
-			
+		}		
 	}
 	
 	//report person exiting to elevatorscene
@@ -79,11 +75,7 @@ public class Person implements Runnable {
 		scene.personExitsAtFloor(floor);
 	}
 	
-	private void debugPerson() {
-		System.out.println("Current Floor: " + currentFloor);
-		System.out.println("Destination Floor: " + destinationFloor);
-		if(currentElevator != null) System.out.println("Currently In Elevator");
-		else System.out.println("Currently NOT In Elevator");
-		System.out.println();
+	private void cancel() {
+		cancelled = true;
 	}
 }
