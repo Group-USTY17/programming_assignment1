@@ -30,49 +30,36 @@ public class ElevatorScene {
 
 	//Base function: definition must not change
 	//Necessary to add your code in this one
-	public void restartScene(int numberOfFloors, int numberOfElevators) {
-
-		/**
-		 * Important to add code here to make new
-		 * threads that run your elevator-runnables
-		 * 
-		 * Also add any other code that initializes
-		 * your system for a new run
-		 * 
-		 * If you can, tell any currently running
-		 * elevator threads to stop
-		 */
-		
+	public void restartScene(int numberOfFloors, int numberOfElevators) {	
 		cleanUpScene();
 		initializeScene(numberOfFloors, numberOfElevators);
-
-		this.numberOfFloors = numberOfFloors;
-		this.numberOfElevators = numberOfElevators;
 	}
 
 	//Base function: definition must not change
 	//Necessary to add your code in this one
 	public Thread addPerson(int sourceFloor, int destinationFloor) {
 		activePersons++;
-		Person newPerson = new Person(sourceFloor, destinationFloor, this);
-		floors[sourceFloor].addPerson(newPerson);
-		Thread newThread = new Thread(new Person(sourceFloor, destinationFloor, this));
-		newThread.start();
-		return newThread;
+		floors[sourceFloor].addPerson();
+		Thread newPerson = new Thread(new Person(sourceFloor, destinationFloor, this));
+		newPerson.start();
+		return newPerson;
 	}
 
 	//Base function: definition must not change, but add your code
 	public int getCurrentFloorForElevator(int elevator) {
+		if(elevators == null) return -1; //in case the function is called before initializing elevators
 		return elevators[elevator].getFloor();
 	}
 
 	//Base function: definition must not change, but add your code
 	public int getNumberOfPeopleInElevator(int elevator) {
+		if(elevators == null) return -1; //in case the function is called before initializing elevators
 		return elevators[elevator].getOccupantCount();
 	}
 
 	//Base function: definition must not change, but add your code
 	public int getNumberOfPeopleWaitingAtFloor(int floor) {
+		if(floors == null) return 0; //in case the function is called before initializing floor
 		return floors[floor].getPersonCount();
 	}
 
@@ -122,8 +109,8 @@ public class ElevatorScene {
 			activePersons--;
 			exitedCountMutex.release();
 
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+		}
+		catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}

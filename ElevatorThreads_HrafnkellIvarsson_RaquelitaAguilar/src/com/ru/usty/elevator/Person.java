@@ -57,7 +57,7 @@ public class Person implements Runnable {
 	private void enterElevator(Elevator e) {
 		if(e.addOccupant(this)) {
 			currentElevator = e;
-			scene.floors[currentFloor].removePerson(this);
+			scene.floors[currentFloor].removePerson();
 		}
 	}
 	

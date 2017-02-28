@@ -17,7 +17,7 @@ public class Floor {
 	}
 	
 	//adds a person
-	public void addPerson(Person pers) {
+	public void addPerson() {
 		try {
 			personCountMutex.acquire();
 			personCount++;
@@ -28,7 +28,7 @@ public class Floor {
 	}
 	
 	//removes a person
-	public void removePerson(Person pers) {
+	public void removePerson() {
 		try {
 			personCountMutex.acquire();
 			personCount--;
