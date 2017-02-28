@@ -63,8 +63,13 @@ public class Floor {
 	
 	//returns an available elevator
 	public Elevator getAvailableElevator() {
-		for(int i = 0; i < elevators.size(); i++) {
-			if(!elevators.get(i).atCapacity()) return elevators.get(i);
+		try {
+			for(int i = 0; i < elevators.size(); i++) {
+				if(!elevators.get(i).atCapacity()) return elevators.get(i);
+			}
+		}
+		catch (java.lang.NullPointerException e) {
+			return null;
 		}
 		
 		return null;

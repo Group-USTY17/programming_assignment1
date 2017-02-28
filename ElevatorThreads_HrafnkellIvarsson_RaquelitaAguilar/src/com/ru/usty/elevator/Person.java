@@ -23,7 +23,7 @@ public class Person implements Runnable {
 					}
 				}
 				else { //currently not in an elevator
-					Elevator availableElevator =  scene.floors[currentFloor].getAvailableElevator(); 
+					Elevator availableElevator = scene.floors[currentFloor].getAvailableElevator(); 
 					if(availableElevator != null) {
 						enterElevator(availableElevator);
 					}
