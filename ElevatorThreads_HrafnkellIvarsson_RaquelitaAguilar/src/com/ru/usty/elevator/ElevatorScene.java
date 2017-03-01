@@ -15,7 +15,7 @@ public class ElevatorScene {
 
 	//TO SPEED THINGS UP WHEN TESTING,
 	//feel free to change this.  It will be changed during grading
-	public static final int VISUALIZATION_WAIT_TIME = 500;  //milliseconds
+	public static final int VISUALIZATION_WAIT_TIME = 250;  //milliseconds
 
 	private int numberOfFloors;
 	private int numberOfElevators;
@@ -48,13 +48,25 @@ public class ElevatorScene {
 	//Base function: definition must not change, but add your code
 	public int getCurrentFloorForElevator(int elevator) {
 		if(elevators == null) return -1; //in case the function is called before initializing elevators
-		return elevators[elevator].getFloor();
+		try { 
+			int floor = elevators[elevator].getFloor();
+			return floor;
+		}
+		catch (java.lang.NullPointerException e) {
+			return -1;
+		}
 	}
 
 	//Base function: definition must not change, but add your code
 	public int getNumberOfPeopleInElevator(int elevator) {
 		if(elevators == null) return -1; //in case the function is called before initializing elevators
-		return elevators[elevator].getOccupantCount();
+		try {
+			int occupantCount = elevators[elevator].getOccupantCount();
+			return occupantCount;
+		}
+		catch (java.lang.NullPointerException e) {
+			return -1;
+		}
 	}
 
 	//Base function: definition must not change, but add your code

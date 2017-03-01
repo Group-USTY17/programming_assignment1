@@ -7,7 +7,7 @@ public class Person implements Runnable {
 	private Elevator currentElevator;
 	private ElevatorScene scene;
 	
-	public static final int PERSON_CYCLE_TIME = 100; //thinking cycle of a person thread
+	public static final int PERSON_CYCLE_TIME = ElevatorScene.VISUALIZATION_WAIT_TIME / 2; //thinking cycle of a person thread
 	
 	@Override
 	public void run() {

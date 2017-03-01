@@ -17,10 +17,11 @@ public class ElevatorMainProgram {
 
 			Thread.sleep(2000);
 			*/
-
-		  	for(int i = 0; i <= 9; i++) {
-		  		TestSuite.runTest(i);
-		  		Thread.sleep(2000);
+			for(int j = 0; j <= 15; j++) {
+				for(int i = 0; i <= 9; i++) {
+		  			TestSuite.runTest(i);
+		  			Thread.sleep(2000);
+		  		}
 			}
 
 /*************************************************************/
