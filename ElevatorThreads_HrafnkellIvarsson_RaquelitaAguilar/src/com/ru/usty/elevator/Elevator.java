@@ -7,7 +7,7 @@ public class Elevator implements Runnable {
 	private volatile boolean cancelled;
 	private int currentFloor;
 	private int floorCount;
-	private int capacity;
+	public static final int MAX_CAPACITY = 6;
 	private int direction; //0 == down, 1 == up
 	private ArrayList<Person> occupants;
 	private ElevatorScene scene;
@@ -32,7 +32,7 @@ public class Elevator implements Runnable {
 	public Elevator(int floor, int floors, ElevatorScene es) {
 		currentFloor = floor;
 		floorCount = floors;
-		capacity = 6; //this variable might need some fine tuning
+		//capacity = 6; //this variable might need some fine tuning
 		scene = es;
 		occupants = new ArrayList<Person>();
 		direction = 1;
@@ -84,7 +84,7 @@ public class Elevator implements Runnable {
 	
 	//is the elevator full?
 	public boolean atCapacity() {
-		return occupants.size() >= capacity;
+		return occupants.size() >= MAX_CAPACITY;
 	}
 	
 	public void cancel() {
