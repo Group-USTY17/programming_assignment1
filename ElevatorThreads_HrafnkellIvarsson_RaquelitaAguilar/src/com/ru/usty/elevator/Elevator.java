@@ -46,7 +46,15 @@ public class Elevator implements Runnable {
 	
 	//returns the number of people in the elevator
 	public int getOccupantCount() {
-		return occupants.size();
+		try{
+			occupantsMutex.acquire();
+				int occupantSize = occupants.size();
+			occupantsMutex.release();
+			return occupantSize;
+		}catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 	
 	//adds a person to the elevator
